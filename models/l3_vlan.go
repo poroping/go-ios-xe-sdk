@@ -1,9 +1,7 @@
 package models
 
 type L3VlanList struct {
-	Collection struct {
-		Vlan []Vlan `json:"Cisco-IOS-XE-native:Vlan"`
-	} `json:"collection"`
+	Vlan []Vlan `json:"Cisco-IOS-XE-native:Vlan"`
 }
 
 type L3Vlan struct {
@@ -23,4 +21,5 @@ type Vlan struct {
 			} `json:"primary,omitempty"`
 		} `json:"address,omitempty"`
 	} `json:"ip"`
+	Shutdown []string `json:"shutdown,omitempty"`
 }
