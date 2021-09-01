@@ -51,25 +51,14 @@ func (c *Client) ReadL3Vlan(m models.L3Vlan) (*models.L3Vlan, error) {
 	return &res, nil
 }
 
-func (c *Client) UpdateL3Vlan(id int, description interface{}, ip interface{}, mask interface{}) error {
-
-	m := models.L3Vlan{Vlan: models.Vlan{}}
-
-	if description != nil {
-		m.Vlan.Description = fmt.Sprintf("%v", description)
-	}
-	if ip != nil {
-		m.Vlan.IP.Address.Primary.Address = fmt.Sprintf("%v", ip)
-	}
-	if mask != nil {
-		m.Vlan.IP.Address.Primary.Mask = fmt.Sprintf("%v", mask)
-	}
+func (c *Client) UpdateL3Vlan(m models.L3Vlan) error {
+	id := m.Vlan.Name
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -82,7 +71,9 @@ func (c *Client) UpdateL3Vlan(id int, description interface{}, ip interface{}, m
 	return nil
 }
 
-func (c *Client) DeleteL3Vlan(id int) error {
+func (c *Client) DeleteL3Vlan(m models.L3Vlan) error {
+	id := m.Vlan.Name
+
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), nil)
 	if err != nil {
 		return err
