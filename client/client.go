@@ -32,8 +32,8 @@ func NewClient(host, username, password, userAgent string, insecure bool) (*Clie
 }
 
 func (c *Client) doRequest(req *http.Request, sc int) ([]byte, error) {
-	req.Header.Set("Content-Type", "application/vnd.yang.data+json")
-	req.Header.Set("Accept", "application/vnd.yang.data+json, application/vnd.yang.collection+json")
+	req.Header.Set("Content-Type", "application/yang-data+json")
+	req.Header.Set("Accept", "application/yang-data+json")
 	req.Header.Set("User-Agent", c.userAgent)
 	req.SetBasicAuth(c.username, c.password)
 
