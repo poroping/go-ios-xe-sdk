@@ -3,9 +3,9 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
-	"log"
 
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
