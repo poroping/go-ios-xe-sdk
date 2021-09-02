@@ -1,13 +1,7 @@
 package models
 
-type L2Vlan struct {
-	VlanList VlanList `json:"ned:vlan-list"`
-}
-
-type L2VlanList struct {
-	Collection struct {
-		VlanList []VlanList `json:"ned:vlan-list"`
-	} `json:"collection"`
+type Vlan struct {
+	VlanList VlanList `json:"Cisco-IOS-XE-vlan:vlan-list"`
 }
 
 type VlanList struct {

@@ -5,40 +5,43 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"log"
 
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
-func (c *Client) CreateL2Vlan(id int, name interface{}) error {
+func (c *Client) CreateVlan(m models.Vlan) error {
+	id := m.VlanList.ID
 
-	m := models.L2Vlan{VlanList: models.VlanList{
-		ID: id,
-	},
-	}
-
-	if name != nil {
-		m.VlanList.Name = fmt.Sprintf("%v", name)
-	}
+	exists, _ := c.ReadVlan(m)
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list=%d", c.HostURL, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
+
+	if exists != nil {
+		return c.UpdateVlan(m)
+	}
+
 	_, err = c.doRequest(req, 201)
 
 	if err != nil {
 		return err
 	}
 
+	log.Printf("Vlan %d Created", id)
 	return nil
 }
 
-func (c *Client) ReadL2Vlan(id int) (*models.L2Vlan, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), nil)
+func (c *Client) ReadVlan(m models.Vlan) (*models.Vlan, error) {
+	id := m.VlanList.ID
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list=%d", c.HostURL, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +51,7 @@ func (c *Client) ReadL2Vlan(id int) (*models.L2Vlan, error) {
 		return nil, err
 	}
 
-	res := models.L2Vlan{}
+	res := models.Vlan{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -57,17 +60,14 @@ func (c *Client) ReadL2Vlan(id int) (*models.L2Vlan, error) {
 	return &res, nil
 }
 
-func (c *Client) UpdateL2Vlan(id int, name string) error {
-	m := models.L2Vlan{VlanList: models.VlanList{
-		Name: name,
-	},
-	}
+func (c *Client) UpdateVlan(m models.Vlan) error {
+	id := m.VlanList.ID
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list=%d", c.HostURL, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -77,10 +77,12 @@ func (c *Client) UpdateL2Vlan(id int, name string) error {
 		return err
 	}
 
+	log.Printf("VLAN %d already exists, UPDATING", id)
+
 	return nil
 }
 
-func (c *Client) DeleteL2Vlan(id int) error {
+func (c *Client) DeleteVlan(id int) error {
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), nil)
 	if err != nil {
 		return err
@@ -94,7 +96,7 @@ func (c *Client) DeleteL2Vlan(id int) error {
 	return nil
 }
 
-func (c *Client) ListL2Vlan() (*models.L2VlanList, error) {
+func (c *Client) ListVlan() (*models.VlanList, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/", c.HostURL), nil)
 	if err != nil {
 		return nil, err
@@ -105,7 +107,7 @@ func (c *Client) ListL2Vlan() (*models.L2VlanList, error) {
 		return nil, err
 	}
 
-	res := models.L2VlanList{}
+	res := models.VlanList{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err

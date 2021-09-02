@@ -1,14 +1,14 @@
 package models
 
-type L3VlanList struct {
-	Vlan []Vlan `json:"Cisco-IOS-XE-native:Vlan"`
+type SVIList struct {
+	Vlan []L3Interface `json:"Cisco-IOS-XE-native:Vlan"`
 }
 
-type L3Vlan struct {
-	Vlan Vlan `json:"Cisco-IOS-XE-native:Vlan"`
+type SVI struct {
+	Vlan L3Interface `json:"Cisco-IOS-XE-native:Vlan"`
 }
 
-type Vlan struct {
+type L3Interface struct {
 	Name        int    `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
 	IP          struct {

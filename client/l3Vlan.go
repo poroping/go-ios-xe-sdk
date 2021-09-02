@@ -9,7 +9,7 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
-func (c *Client) CreateL3Vlan(m models.L3Vlan) error {
+func (c *Client) CreateSVI(m models.SVI) error {
 	id := m.Vlan.Name
 
 	rb, err := json.Marshal(m)
@@ -20,6 +20,7 @@ func (c *Client) CreateL3Vlan(m models.L3Vlan) error {
 	if err != nil {
 		return err
 	}
+
 	_, err = c.doRequest(req, 201)
 
 	if err != nil {
@@ -29,7 +30,7 @@ func (c *Client) CreateL3Vlan(m models.L3Vlan) error {
 	return nil
 }
 
-func (c *Client) ReadL3Vlan(m models.L3Vlan) (*models.L3Vlan, error) {
+func (c *Client) ReadSVI(m models.SVI) (*models.SVI, error) {
 	id := m.Vlan.Name
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), nil)
@@ -42,7 +43,7 @@ func (c *Client) ReadL3Vlan(m models.L3Vlan) (*models.L3Vlan, error) {
 		return nil, err
 	}
 
-	res := models.L3Vlan{}
+	res := models.SVI{}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func (c *Client) ReadL3Vlan(m models.L3Vlan) (*models.L3Vlan, error) {
 	return &res, nil
 }
 
-func (c *Client) UpdateL3Vlan(m models.L3Vlan) error {
+func (c *Client) UpdateSVI(m models.SVI) error {
 	id := m.Vlan.Name
 
 	rb, err := json.Marshal(m)
@@ -71,7 +72,7 @@ func (c *Client) UpdateL3Vlan(m models.L3Vlan) error {
 	return nil
 }
 
-func (c *Client) DeleteL3Vlan(m models.L3Vlan) error {
+func (c *Client) DeleteSVI(m models.SVI) error {
 	id := m.Vlan.Name
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), nil)
@@ -87,7 +88,7 @@ func (c *Client) DeleteL3Vlan(m models.L3Vlan) error {
 	return nil
 }
 
-// func (c *Client) ListL3Vlan() (*models.L3VlanList, error) {
+// func (c *Client) ListSVI() (*models.SVIList, error) {
 // 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/interface/Vlan/", c.HostURL), nil)
 // 	if err != nil {
 // 		return nil, err
@@ -98,7 +99,7 @@ func (c *Client) DeleteL3Vlan(m models.L3Vlan) error {
 // 		return nil, err
 // 	}
 
-// 	res := models.L3VlanList{}
+// 	res := models.SVIList{}
 // 	err = json.Unmarshal(body, &res)
 // 	if err != nil {
 // 		return nil, err
