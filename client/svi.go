@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -13,6 +14,11 @@ const sviURI = "restconf/data/Cisco-IOS-XE-native:native/interface/Vlan"
 
 func (c *Client) CreateSVI(m models.SVI) error {
 	id := m.Vlan.Name
+
+	exists, _ := c.ReadSVI(m)
+	if exists != nil {
+		return c.UpdateSVI(m)
+	}
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -28,6 +34,8 @@ func (c *Client) CreateSVI(m models.SVI) error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("SVI %d created", id)
 
 	return nil
 }
@@ -71,6 +79,8 @@ func (c *Client) UpdateSVI(m models.SVI) error {
 		return err
 	}
 
+	log.Printf("SVI %d updated", id)
+
 	return nil
 }
 
@@ -86,6 +96,8 @@ func (c *Client) DeleteSVI(m models.SVI) error {
 	if err != nil {
 		return err
 	}
+
+	log.Printf("SVI %d deleted", id)
 
 	return nil
 }
