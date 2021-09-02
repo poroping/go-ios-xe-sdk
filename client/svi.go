@@ -9,6 +9,8 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
+const sviURI = "restconf/data/Cisco-IOS-XE-native:native/interface/Vlan"
+
 func (c *Client) CreateSVI(m models.SVI) error {
 	id := m.Vlan.Name
 
@@ -16,7 +18,7 @@ func (c *Client) CreateSVI(m models.SVI) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s=%d", c.HostURL, sviURI, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -33,7 +35,7 @@ func (c *Client) CreateSVI(m models.SVI) error {
 func (c *Client) ReadSVI(m models.SVI) (*models.SVI, error) {
 	id := m.Vlan.Name
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s=%d", c.HostURL, sviURI, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -59,7 +61,7 @@ func (c *Client) UpdateSVI(m models.SVI) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s=%d", c.HostURL, sviURI, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -75,7 +77,7 @@ func (c *Client) UpdateSVI(m models.SVI) error {
 func (c *Client) DeleteSVI(m models.SVI) error {
 	id := m.Vlan.Name
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/interface/Vlan=%d", c.HostURL, id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s=%d", c.HostURL, sviURI, id), nil)
 	if err != nil {
 		return err
 	}

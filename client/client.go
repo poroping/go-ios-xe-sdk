@@ -6,7 +6,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"log"
 )
+
+const contentType = "application/yang-data+json"
 
 type Client struct {
 	HostURL    string
@@ -32,8 +35,8 @@ func NewClient(host, username, password, userAgent string, insecure bool) (*Clie
 }
 
 func (c *Client) doRequest(req *http.Request, sc int) ([]byte, error) {
-	req.Header.Set("Content-Type", "application/yang-data+json")
-	req.Header.Set("Accept", "application/yang-data+json")
+	req.Header.Set("Content-Type", contentType)
+	req.Header.Set("Accept", contentType)
 	req.Header.Set("User-Agent", c.userAgent)
 	req.SetBasicAuth(c.username, c.password)
 
@@ -49,6 +52,8 @@ func (c *Client) doRequest(req *http.Request, sc int) ([]byte, error) {
 	}
 
 	if res.StatusCode != sc {
+		log.Printf("Status code: %d for request: %s\n    Body: %s \n\n", res.StatusCode, req, body)
+
 		return nil, fmt.Errorf("status: %d, body: %s", res.StatusCode, body)
 	}
 

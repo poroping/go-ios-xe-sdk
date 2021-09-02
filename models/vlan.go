@@ -1,7 +1,7 @@
 package models
 
 type Vlan struct {
-	VlanList VlanList `json:"Cisco-IOS-XE-vlan:vlan-list"`
+	VlanList VlanList `json:"Cisco-IOS-XE-vlan:vlan-list,omitempty"`
 }
 
 type VlanList struct {

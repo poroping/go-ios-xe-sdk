@@ -1,11 +1,11 @@
 package models
 
 type SVIList struct {
-	Vlan []L3Interface `json:"Cisco-IOS-XE-native:Vlan"`
+	Vlan []L3Interface `json:"Cisco-IOS-XE-native:Vlan,omitempty"`
 }
 
 type SVI struct {
-	Vlan L3Interface `json:"Cisco-IOS-XE-native:Vlan"`
+	Vlan L3Interface `json:"Cisco-IOS-XE-native:Vlan,omitempty"`
 }
 
 type L3Interface struct {

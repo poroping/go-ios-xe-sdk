@@ -1,16 +1,14 @@
 package models
 
 type BgpNeighbor struct {
-	Neighbor Neighbor `json:"ned:neighbor"`
-}
-
-type BgpNeighborList struct {
-	Collection struct {
-		Neighbor []Neighbor `json:"ned:neighbor"`
-	} `json:"collection"`
+	Neighbor Neighbor `json:"Cisco-IOS-XE-bgp:neighbor,omitempty"`
 }
 
 type Neighbor struct {
 	ID       string `json:"id,omitempty"`
-	RemoteAs int    `json:"remote-as"`
+	RemoteAs int    `json:"remote-as,omitempty"`
+	ClusterID               string `json:"cluster-id,omitempty"`
+	Description             string `json:"description,omitempty"`
+	DisableConnectedCheck   string `json:"disable-connected-check,omitempty"`
+	Shutdown string `json:"shutdown,omitempty"`
 }

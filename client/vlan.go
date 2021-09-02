@@ -10,22 +10,24 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
+const vlanURI = "restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list"
+
 func (c *Client) CreateVlan(m models.Vlan) error {
 	id := m.VlanList.ID
 
 	exists, _ := c.ReadVlan(m)
+	if exists != nil {
+		return c.UpdateVlan(m)
+	}
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list=%d", c.HostURL, id), strings.NewReader(string(rb)))
+
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s=%d", c.HostURL, vlanURI, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
-	}
-
-	if exists != nil {
-		return c.UpdateVlan(m)
 	}
 
 	_, err = c.doRequest(req, 201)
@@ -35,13 +37,14 @@ func (c *Client) CreateVlan(m models.Vlan) error {
 	}
 
 	log.Printf("Vlan %d Created", id)
+
 	return nil
 }
 
 func (c *Client) ReadVlan(m models.Vlan) (*models.Vlan, error) {
 	id := m.VlanList.ID
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list=%d", c.HostURL, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s=%d", c.HostURL, vlanURI, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +70,7 @@ func (c *Client) UpdateVlan(m models.Vlan) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list=%d", c.HostURL, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s=%d", c.HostURL, vlanURI, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -82,8 +85,10 @@ func (c *Client) UpdateVlan(m models.Vlan) error {
 	return nil
 }
 
-func (c *Client) DeleteVlan(id int) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/%d", c.HostURL, id), nil)
+func (c *Client) DeleteVlan(m models.Vlan) error {
+	id := m.VlanList.ID
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s=%d", c.HostURL, vlanURI, id), nil)
 	if err != nil {
 		return err
 	}
@@ -97,7 +102,7 @@ func (c *Client) DeleteVlan(id int) error {
 }
 
 func (c *Client) ListVlan() (*models.VlanList, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/vlan/vlan-list/", c.HostURL), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, vlanURI), nil)
 	if err != nil {
 		return nil, err
 	}
