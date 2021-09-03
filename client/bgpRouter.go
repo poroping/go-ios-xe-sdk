@@ -9,19 +9,20 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
-func (c *Client) CreateBgpRouter(uri string, m models.BgpRouter) error {
+func (c *Client) CreateBgpRouter(m models.BgpRouter) error {
 	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
-	exists, _ := c.ReadBgpRouter(uri, m)
+	exists, _ := c.ReadBgpRouter(m)
 	if exists != nil {
-		return c.UpdateBgpRouter(uri, m)
+		return c.UpdateBgpRouter(m)
 	}
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s=%s", c.HostURL, uri, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -34,10 +35,11 @@ func (c *Client) CreateBgpRouter(uri string, m models.BgpRouter) error {
 	return nil
 }
 
-func (c *Client) ReadBgpRouter(uri string, m models.BgpRouter) (*models.BgpRouter, error) {
+func (c *Client) ReadBgpRouter(m models.BgpRouter) (*models.BgpRouter, error) {
 	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s=%s", c.HostURL, uri, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,14 +58,15 @@ func (c *Client) ReadBgpRouter(uri string, m models.BgpRouter) (*models.BgpRoute
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpRouter(uri string, m models.BgpRouter) error {
+func (c *Client) UpdateBgpRouter(m models.BgpRouter) error {
 	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s=%s", c.HostURL, uri, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -76,10 +79,11 @@ func (c *Client) UpdateBgpRouter(uri string, m models.BgpRouter) error {
 	return nil
 }
 
-func (c *Client) DeleteBgpRouter(uri string, m models.BgpRouter) error {
+func (c *Client) DeleteBgpRouter(m models.BgpRouter) error {
 	id := m.Bgp.ID
+	uri := GetBgpURI(id)
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s=%s", c.HostURL, uri, id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
 		return err
 	}
