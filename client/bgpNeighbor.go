@@ -10,13 +10,12 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
-func (c *Client) CreateBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) error {
+func (c *Client) CreateBgpNeighbor(uri string, m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
-	as := r.Bgp.ID
 
-	exists, _ := c.ReadBgpNeighbor(r, m)
+	exists, _ := c.ReadBgpNeighbor(uri, m)
 	if exists != nil {
-		return c.UpdateBgpNeighbor(r, m)
+		return c.UpdateBgpNeighbor(uri, m)
 	}
 
 	log.Printf("Doesn't exist, will create")
@@ -25,7 +24,7 @@ func (c *Client) CreateBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) err
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s=%s/neighbor=%s", c.HostURL, bgpRouterURI, as, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s/neighbor=%s", c.HostURL, uri, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -38,11 +37,10 @@ func (c *Client) CreateBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) err
 	return nil
 }
 
-func (c *Client) ReadBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) (*models.BgpNeighbor, error) {
+func (c *Client) ReadBgpNeighbor(uri string, m models.BgpNeighbor) (*models.BgpNeighbor, error) {
 	id := m.Neighbor.ID
-	as := r.Bgp.ID
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s=%s/neighbor=%s", c.HostURL, bgpRouterURI, as, id), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s/neighbor=%s", c.HostURL, uri, id), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +59,14 @@ func (c *Client) ReadBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) (*mod
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) error {
+func (c *Client) UpdateBgpNeighbor(uri string, m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
-	as := r.Bgp.ID
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s=%s/neighbor=%s", c.HostURL, bgpRouterURI, as, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s/neighbor=%s", c.HostURL, uri, id), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -82,11 +79,10 @@ func (c *Client) UpdateBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) err
 	return nil
 }
 
-func (c *Client) DeleteBgpNeighbor(r models.BgpRouter, m models.BgpNeighbor) error {
+func (c *Client) DeleteBgpNeighbor(uri string, m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
-	as := r.Bgp.ID
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s=%s/neighbor=%s", c.HostURL, bgpRouterURI, as, id), nil)
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/neighbor=%s", c.HostURL, uri, id), nil)
 	if err != nil {
 		return err
 	}
