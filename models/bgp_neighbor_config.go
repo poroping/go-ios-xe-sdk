@@ -15,7 +15,10 @@ type NeighborConfig struct {
 	Activate         []interface{} `json:"activate,omitempty"`
 	DefaultOriginate struct {
 	} `json:"default-originate,omitempty"`
-	PrefixList          []PrefixList  `json:"prefix-list"`
+	LocalAs struct {
+		AsNo string `json:"as-no,omitempty"`
+	} `json:"local-as,omitempty"`
+	PrefixList          []PrefixList  `json:"prefix-list,omitempty"`
 	RemovePrivateAs     []interface{} `json:"remove-private-as,omitempty"`
 	SoftReconfiguration string        `json:"soft-reconfiguration,omitempty"`
 }
