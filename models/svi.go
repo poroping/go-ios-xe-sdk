@@ -15,10 +15,7 @@ type L3Interface struct {
 		Vrf struct {
 		} `json:"vrf,omitempty"`
 		Address struct {
-			Primary struct {
-				Address string `json:"address"`
-				Mask    string `json:"mask"`
-			} `json:"primary,omitempty"`
+			Primary IPAddress `json:"primary,omitempty"`
 		} `json:"address,omitempty"`
 	} `json:"ip"`
 	Shutdown []string `json:"shutdown,omitempty"`
