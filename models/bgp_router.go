@@ -2,7 +2,7 @@ package models
 
 type BgpRouter struct {
 	Bgp struct {
-		ID  string `json:"id,omitempty"`
+		ID  int `json:"id,omitempty"`
 		Bgp struct {
 			AigpRibMetric         string `json:"aigp-rib-metric,omitempty"`
 			AlwaysCompareMed      string `json:"always-compare-med,omitempty"`
@@ -27,7 +27,7 @@ type BgpRouter struct {
 
 type BgpRouterList struct {
 	Bgp []struct {
-		ID  string `json:"id,omitempty"`
+		ID  int `json:"id,omitempty"`
 		Bgp struct {
 			AigpRibMetric         string `json:"aigp-rib-metric,omitempty"`
 			AlwaysCompareMed      string `json:"always-compare-med,omitempty"`
