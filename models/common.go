@@ -33,3 +33,8 @@ func (ip *IPAddress) SetNetmask() error {
 
 	return nil
 }
+
+type PrefixList struct {
+	Inout          string `json:"inout"`
+	PrefixListName string `json:"prefix-list-name"`
+}
