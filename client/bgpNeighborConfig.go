@@ -17,7 +17,7 @@ func (c *Client) CreateBgpNeighborConfig(asn int, m models.BgpNeighborConfig) er
 	neighbor.Neighbor.ID = id
 
 	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
-	if parent_exists != nil {
+	if parent_exists == nil {
 		return fmt.Errorf("neighbor %q does not exist", id)
 	}
 
@@ -51,7 +51,7 @@ func (c *Client) ReadBgpNeighborConfig(asn int, m models.BgpNeighborConfig) (*mo
 	neighbor.Neighbor.ID = id
 
 	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
-	if parent_exists != nil {
+	if parent_exists == nil {
 		return nil, fmt.Errorf("neighbor %q does not exist", id)
 	}
 
@@ -82,7 +82,7 @@ func (c *Client) UpdateBgpNeighborConfig(asn int, m models.BgpNeighborConfig) er
 	neighbor.Neighbor.ID = id
 
 	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
-	if parent_exists != nil {
+	if parent_exists == nil {
 		return fmt.Errorf("neighbor %q does not exist", id)
 	}
 
