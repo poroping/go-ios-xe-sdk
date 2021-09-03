@@ -9,7 +9,7 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
-func (c *Client) CreateBgpNeighborConfig(asn string, m models.BgpNeighborConfig) error {
+func (c *Client) CreateBgpNeighborConfig(asn int, m models.BgpNeighborConfig) error {
 	id := m.NeighborConfig.ID
 	uri := GetBgpNeighborConfigURI(asn, id, nil)
 
@@ -43,7 +43,7 @@ func (c *Client) CreateBgpNeighborConfig(asn string, m models.BgpNeighborConfig)
 	return nil
 }
 
-func (c *Client) ReadBgpNeighborConfig(asn string, m models.BgpNeighborConfig) (*models.BgpNeighborConfig, error) {
+func (c *Client) ReadBgpNeighborConfig(asn int, m models.BgpNeighborConfig) (*models.BgpNeighborConfig, error) {
 	id := m.NeighborConfig.ID
 	uri := GetBgpNeighborConfigURI(asn, id, nil)
 
@@ -74,7 +74,7 @@ func (c *Client) ReadBgpNeighborConfig(asn string, m models.BgpNeighborConfig) (
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighborConfig(asn string, m models.BgpNeighborConfig) error {
+func (c *Client) UpdateBgpNeighborConfig(asn int, m models.BgpNeighborConfig) error {
 	id := m.NeighborConfig.ID
 	uri := GetBgpNeighborConfigURI(asn, id, nil)
 
@@ -103,7 +103,7 @@ func (c *Client) UpdateBgpNeighborConfig(asn string, m models.BgpNeighborConfig)
 	return nil
 }
 
-func (c *Client) DeleteBgpNeighborConfig(asn string, m models.BgpNeighborConfig) error {
+func (c *Client) DeleteBgpNeighborConfig(asn int, m models.BgpNeighborConfig) error {
 	id := m.NeighborConfig.ID
 	uri := GetBgpNeighborConfigURI(asn, id, nil)
 
