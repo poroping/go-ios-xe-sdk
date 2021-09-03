@@ -3,9 +3,9 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
-	"log"
 
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
@@ -65,7 +65,6 @@ func (c *Client) UpdateBgpNeighbor(asn string, m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
 	uri := GetBgpNeighborURI(asn, id)
 
-
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
@@ -86,8 +85,8 @@ func (c *Client) UpdateBgpNeighbor(asn string, m models.BgpNeighbor) error {
 func (c *Client) DeleteBgpNeighbor(asn string, m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
 	uri := GetBgpNeighborURI(asn, id)
-	
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s/neighbor=%s", c.HostURL, uri, id), nil)
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
 		return err
 	}
