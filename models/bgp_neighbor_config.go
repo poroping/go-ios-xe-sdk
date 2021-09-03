@@ -19,6 +19,7 @@ type NeighborConfig struct {
 		AsNo int `json:"as-no,omitempty"`
 	} `json:"local-as,omitempty"`
 	PrefixList          []PrefixList  `json:"prefix-list,omitempty"`
+	RemoteAs            int           `json:"remote-as,omitempty"`
 	RemovePrivateAs     []interface{} `json:"remove-private-as,omitempty"`
 	SoftReconfiguration string        `json:"soft-reconfiguration,omitempty"`
 }
