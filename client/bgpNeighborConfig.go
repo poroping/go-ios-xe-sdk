@@ -9,26 +9,28 @@ import (
 	"github.com/poroping/go-ios-xe-sdk/models"
 )
 
-func (c *Client) CreateBgpNeighborConfig(id string, as int, activate interface{}, defaultoriginate interface{}, removeprivateas interface{}, softreconfiguration interface{}) error {
-	m := models.BgpNeighborConfig{}
-	m.NeighborConfig.ID = id
-	if activate != nil {
-		m.NeighborConfig.Activate = []interface{}{}
+func (c *Client) CreateBgpNeighborConfig(asn string, m models.BgpNeighborConfig) error {
+	id := m.NeighborConfig.ID
+	uri := GetBgpNeighborConfigURI(asn, id, nil)
+
+	neighbor := models.BgpNeighbor{}
+	neighbor.Neighbor.ID = id
+
+	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
+	if parent_exists != nil {
+		return fmt.Errorf("neighbor %q does not exist", id)
 	}
-	if defaultoriginate != nil {
-		m.NeighborConfig.DefaultOriginate = struct{}{}
+
+	exists, _ := c.ReadBgpNeighborConfig(asn, m)
+	if exists != nil {
+		return c.UpdateBgpNeighborConfig(asn, m)
 	}
-	if removeprivateas != nil {
-		m.NeighborConfig.RemovePrivateAs = []interface{}{}
-	}
-	if softreconfiguration != nil {
-		m.NeighborConfig.SoftReconfiguration = "inbound"
-	}
+
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -41,8 +43,19 @@ func (c *Client) CreateBgpNeighborConfig(id string, as int, activate interface{}
 	return nil
 }
 
-func (c *Client) ReadBgpNeighborConfig(id string, as int) (*models.BgpNeighborConfig, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), nil)
+func (c *Client) ReadBgpNeighborConfig(asn string, m models.BgpNeighborConfig) (*models.BgpNeighborConfig, error) {
+	id := m.NeighborConfig.ID
+	uri := GetBgpNeighborConfigURI(asn, id, nil)
+
+	neighbor := models.BgpNeighbor{}
+	neighbor.Neighbor.ID = id
+
+	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
+	if parent_exists != nil {
+		return nil, fmt.Errorf("neighbor %q does not exist", id)
+	}
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,26 +74,23 @@ func (c *Client) ReadBgpNeighborConfig(id string, as int) (*models.BgpNeighborCo
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighborConfig(id string, as int, activate interface{}, defaultoriginate interface{}, removeprivateas interface{}, softreconfiguration interface{}) error {
-	m := models.BgpNeighborConfig{}
-	m.NeighborConfig.ID = id
-	if activate != nil {
-		m.NeighborConfig.Activate = []interface{}{}
+func (c *Client) UpdateBgpNeighborConfig(asn string, m models.BgpNeighborConfig) error {
+	id := m.NeighborConfig.ID
+	uri := GetBgpNeighborConfigURI(asn, id, nil)
+
+	neighbor := models.BgpNeighbor{}
+	neighbor.Neighbor.ID = id
+
+	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
+	if parent_exists != nil {
+		return fmt.Errorf("neighbor %q does not exist", id)
 	}
-	if defaultoriginate != nil {
-		m.NeighborConfig.DefaultOriginate = struct{}{}
-	}
-	if removeprivateas != nil {
-		m.NeighborConfig.RemovePrivateAs = []interface{}{}
-	}
-	if softreconfiguration != nil {
-		m.NeighborConfig.SoftReconfiguration = "inbound"
-	}
+
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), strings.NewReader(string(rb)))
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(string(rb)))
 	if err != nil {
 		return err
 	}
@@ -93,8 +103,11 @@ func (c *Client) UpdateBgpNeighborConfig(id string, as int, activate interface{}
 	return nil
 }
 
-func (c *Client) DeleteBgpNeighborConfig(id string, as int) error {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/%d/address-family/no-vrf/ipv4/unicast/neighbor/%s", c.HostURL, as, id), nil)
+func (c *Client) DeleteBgpNeighborConfig(asn string, m models.BgpNeighborConfig) error {
+	id := m.NeighborConfig.ID
+	uri := GetBgpNeighborConfigURI(asn, id, nil)
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
 	if err != nil {
 		return err
 	}
