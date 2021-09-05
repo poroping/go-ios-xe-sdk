@@ -23,9 +23,8 @@ func GetBgpNeighborURI(asn int, neighbor string) string {
 }
 
 func GetBgpNeighborConfigURI(asn int, neighbor string, vrf *string) string {
-	if vrf == nil {
-		noVrf := "no-vrf"
-		vrf = &noVrf
+	if vrf != nil {
+		return fmt.Sprintf("%s/address-family/with-vrf/ipv4/unicast/vrf=%s/ipv4-unicast/neighbor=%s", string(GetBgpURI(asn)), *vrf, neighbor)
 	}
-	return fmt.Sprintf("%s/address-family/%s/ipv4/unicast/ipv4-unicast/neighbor=%s", string(GetBgpURI(asn)), vrf, neighbor)
+	return fmt.Sprintf("%s/address-family/no-vrf/ipv4/unicast/ipv4-unicast/neighbor=%s", string(GetBgpURI(asn)), neighbor)
 }

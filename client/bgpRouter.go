@@ -13,10 +13,10 @@ func (c *Client) CreateBgpRouter(m models.BgpRouter) error {
 	id := m.Bgp.ID
 	uri := GetBgpURI(id)
 
-	exists, _ := c.ReadBgpRouter(m)
-	if exists != nil {
-		return c.UpdateBgpRouter(m)
-	}
+	// exists, _ := c.ReadBgpRouter(m)
+	// if exists != nil {
+	// 	return c.UpdateBgpRouter(m)
+	// }
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -26,7 +26,27 @@ func (c *Client) CreateBgpRouter(m models.BgpRouter) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.doRequest(req, 201)
+	_, err = c.doRequest(req, 0)
+
+	if err != nil {
+		return err
+	}
+
+	// create ipv4 unicast AF
+	// TODO: probs move this to some other func later
+
+	payload := `{
+		"Cisco-IOS-XE-bgp:ipv4": {
+			"af-name": "unicast"
+		}
+	}`
+	uri += "/address-family/no-vrf/ipv4=unicast"
+
+	req, err = http.NewRequest("PUT", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	_, err = c.doRequest(req, 0)
 
 	if err != nil {
 		return err

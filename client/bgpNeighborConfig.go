@@ -16,15 +16,19 @@ func (c *Client) CreateBgpNeighborConfig(asn int, m models.BgpNeighborConfig) er
 	neighbor := models.BgpNeighbor{}
 	neighbor.Neighbor.ID = id
 
-	parent_exists, _ := c.ReadBgpNeighbor(asn, neighbor)
+	parent_exists, err := c.ReadBgpNeighbor(asn, neighbor)
 	if parent_exists == nil {
-		return fmt.Errorf("neighbor %q does not exist", id)
+		return fmt.Errorf("neighbor %q does not exist: %s", id, err)
 	}
 
-	exists, _ := c.ReadBgpNeighborConfig(asn, m)
-	if exists != nil {
-		return c.UpdateBgpNeighborConfig(asn, m)
-	}
+	x := json.RawMessage(`[ null ]`)
+	m.NeighborConfig.Activate = &x
+
+	// disabled cause can't PATCH certain fields "off"
+	// exists, _ := c.ReadBgpNeighborConfig(asn, m)
+	// if exists != nil {
+	// 	return c.UpdateBgpNeighborConfig(asn, m)
+	// }
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -34,7 +38,7 @@ func (c *Client) CreateBgpNeighborConfig(asn int, m models.BgpNeighborConfig) er
 	if err != nil {
 		return err
 	}
-	_, err = c.doRequest(req, 201)
+	_, err = c.doRequest(req, 0) // set 0 cause PUT create and PUT update are diff 200 codes
 
 	if err != nil {
 		return err

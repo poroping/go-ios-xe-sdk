@@ -15,10 +15,10 @@ const sviURI = "restconf/data/Cisco-IOS-XE-native:native/interface/Vlan"
 func (c *Client) CreateSVI(m models.SVI) error {
 	id := m.Vlan.Name
 
-	exists, _ := c.ReadSVI(m)
-	if exists != nil {
-		return c.UpdateSVI(m)
-	}
+	// exists, _ := c.ReadSVI(m)
+	// if exists != nil {
+	// 	return c.UpdateSVI(m)
+	// }
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -29,7 +29,7 @@ func (c *Client) CreateSVI(m models.SVI) error {
 		return err
 	}
 
-	_, err = c.doRequest(req, 201)
+	_, err = c.doRequest(req, 0)
 
 	if err != nil {
 		return err

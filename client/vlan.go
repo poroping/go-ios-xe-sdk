@@ -15,10 +15,10 @@ const vlanURI = "restconf/data/Cisco-IOS-XE-native:native/vlan/vlan-list"
 func (c *Client) CreateVlan(m models.Vlan) error {
 	id := m.VlanList.ID
 
-	exists, _ := c.ReadVlan(m)
-	if exists != nil {
-		return c.UpdateVlan(m)
-	}
+	// exists, _ := c.ReadVlan(m)
+	// if exists != nil {
+	// 	return c.UpdateVlan(m)
+	// }
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -30,7 +30,7 @@ func (c *Client) CreateVlan(m models.Vlan) error {
 		return err
 	}
 
-	_, err = c.doRequest(req, 201)
+	_, err = c.doRequest(req, 0)
 
 	if err != nil {
 		return err

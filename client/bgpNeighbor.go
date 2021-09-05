@@ -14,12 +14,13 @@ func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
 	uri := GetBgpNeighborURI(asn, id)
 
-	exists, _ := c.ReadBgpNeighbor(asn, m)
-	if exists != nil {
-		return c.UpdateBgpNeighbor(asn, m)
-	}
+	// disabled cause can't PATCH certain fields "off"
+	// exists, _ := c.ReadBgpNeighbor(asn, m)
+	// if exists != nil {
+	// 	return c.UpdateBgpNeighbor(asn, m)
+	// }
 
-	log.Printf("Doesn't exist, will create")
+	// log.Printf("Doesn't exist, will create")
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -29,11 +30,13 @@ func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	if err != nil {
 		return err
 	}
-	_, err = c.doRequest(req, 201)
+	_, err = c.doRequest(req, 0) // set 0 cause PUT create and PUT update are diff 200 codes
 
 	if err != nil {
 		return err
 	}
+
+	log.Println("[INFO] neighbor created.")
 
 	return nil
 }
