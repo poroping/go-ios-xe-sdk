@@ -7,18 +7,35 @@ import (
 	"strconv"
 )
 
-const ExplicitNull string = (`[ null ]`)
+const ExplicitNull string = (`[null]`)
+
+var CiscoEnabled json.RawMessage = []byte(ExplicitNull)
+
+const BasePath = "/restconf/data/Cisco-IOS-XE-native:native"
+
+type IOSXERequest struct {
+	HTTPMethod string
+	Payload    []byte
+	Params     []string
+	Path       string
+	Key        *string
+}
+
+type Address struct {
+	Primary   *IPAddress            `json:"primary,omitempty"`
+	Secondary *[]SecondaryIPAddress `json:"secondary,omitempty"`
+}
 
 type IPAddress struct {
-	Address string `json:"address"`
-	Mask    string `json:"mask"`
+	Address string `json:"address,omitempty"`
+	Mask    string `json:"mask,omitempty"`
 	CIDR    string `json:"-"`
 }
 
 type SecondaryIPAddress struct {
-	Address   string           `json:"address"`
-	Mask      string           `json:"mask"`
-	Secondary *json.RawMessage `json:"secondary"`
+	Address   string           `json:"address,omitempty"`
+	Mask      string           `json:"mask,omitempty"`
+	Secondary *json.RawMessage `json:"secondary,omitempty"`
 	CIDR      string           `json:"-"`
 }
 
@@ -73,14 +90,6 @@ func (ip *SecondaryIPAddress) SetNetmask() error {
 }
 
 type PrefixList struct {
-	Inout          string `json:"inout"`
-	PrefixListName string `json:"prefix-list-name"`
-}
-
-type Interface struct {
-	GigabitEthernet *string `json:"GigabitEthernet,omitempty"`
-	HundredGigE     *string `json:"HundredGigE,omitempty"`
-	Loopback        *int    `json:"Loopback,omitempty"`
-	TwentyFiveGigE  *string `json:"TwentyFiveGigE,omitempty"`
-	Vlan            *int    `json:"Vlan,omitempty"`
+	Inout          string `json:"inout,omitempty"`
+	PrefixListName string `json:"prefix-list-name,omitempty"`
 }

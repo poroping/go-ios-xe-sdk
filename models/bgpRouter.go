@@ -1,5 +1,15 @@
 package models
 
+import "fmt"
+
+var (
+	BgpBase = fmt.Sprintf("%s/%s", BasePath, "router/Cisco-IOS-XE-bgp:bgp")
+)
+
+func BgpPath(asn int) string {
+	return fmt.Sprintf("%s=%d", BgpBase, asn)
+}
+
 type BgpRouter struct {
 	Bgp struct {
 		ID  int `json:"id,omitempty"`

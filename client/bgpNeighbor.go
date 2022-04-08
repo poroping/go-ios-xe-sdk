@@ -2,17 +2,16 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
-	"strings"
 
 	"github.com/poroping/go-ios-xe-sdk/models"
+	"github.com/poroping/go-ios-xe-sdk/request"
 )
 
-func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
+func (c *CiscoIOSXEClient) CreateBgpNeighbor(m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+	asn := m.Neighbor.ASN
+	uri := models.BgpNeighborPath(asn, id)
 
 	// disabled cause can't PATCH certain fields "off"
 	// exists, _ := c.ReadBgpNeighbor(asn, m)
@@ -26,12 +25,14 @@ func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(string(rb)))
-	if err != nil {
-		return err
-	}
-	_, err = c.doRequest(req, 0) // set 0 cause PUT create and PUT update are diff 200 codes
 
+	r := models.IOSXERequest{}
+	r.HTTPMethod = "PUT"
+	r.Key = &m.Neighbor.ID
+	r.Payload = rb
+	r.Path = uri
+
+	err = request.CreateUpdate(&c.Config, &r)
 	if err != nil {
 		return err
 	}
@@ -41,21 +42,25 @@ func (c *Client) CreateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	return nil
 }
 
-func (c *Client) ReadBgpNeighbor(asn int, m models.BgpNeighbor) (*models.BgpNeighbor, error) {
+func (c *CiscoIOSXEClient) ReadBgpNeighbor(m models.BgpNeighbor) (*models.BgpNeighbor, error) {
 	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+	asn := m.Neighbor.ASN
+	uri := models.BgpNeighborPath(asn, id)
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
-	if err != nil {
-		return nil, err
-	}
+	r := models.IOSXERequest{}
+	r.HTTPMethod = "GET"
+	r.Key = &m.Neighbor.ID
+	r.Path = uri
 
-	body, err := c.doRequest(req, 200)
+	body, err := request.Read(&c.Config, &r)
 	if err != nil {
 		return nil, err
 	}
 
 	res := models.BgpNeighbor{}
+	if body == nil {
+		return &res, nil
+	}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
 		return nil, err
@@ -64,20 +69,24 @@ func (c *Client) ReadBgpNeighbor(asn int, m models.BgpNeighbor) (*models.BgpNeig
 	return &res, nil
 }
 
-func (c *Client) UpdateBgpNeighbor(asn int, m models.BgpNeighbor) error {
+func (c *CiscoIOSXEClient) UpdateBgpNeighbor(m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+	asn := m.Neighbor.ASN
+	uri := models.BgpNeighborPath(asn, id)
 
 	rb, err := json.Marshal(m)
 	if err != nil {
 		return err
 	}
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/%s", c.HostURL, uri), strings.NewReader(string(rb)))
-	if err != nil {
-		return err
-	}
-	_, err = c.doRequest(req, 204)
+	log.Printf("[DEBUG] %v", string(rb))
 
+	r := models.IOSXERequest{}
+	r.HTTPMethod = "PUT"
+	r.Key = &m.Neighbor.ID
+	r.Path = uri
+	r.Payload = rb
+
+	err = request.CreateUpdate(&c.Config, &r)
 	if err != nil {
 		return err
 	}
@@ -85,16 +94,17 @@ func (c *Client) UpdateBgpNeighbor(asn int, m models.BgpNeighbor) error {
 	return nil
 }
 
-func (c *Client) DeleteBgpNeighbor(asn int, m models.BgpNeighbor) error {
+func (c *CiscoIOSXEClient) DeleteBgpNeighbor(m models.BgpNeighbor) error {
 	id := m.Neighbor.ID
-	uri := GetBgpNeighborURI(asn, id)
+	asn := m.Neighbor.ASN
+	uri := models.BgpNeighborPath(asn, id)
 
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
-	if err != nil {
-		return err
-	}
-	_, err = c.doRequest(req, 204)
+	r := models.IOSXERequest{}
+	r.HTTPMethod = "DELETE"
+	r.Key = &m.Neighbor.ID
+	r.Path = uri
 
+	err := request.Delete(&c.Config, &r)
 	if err != nil {
 		return err
 	}
@@ -103,7 +113,7 @@ func (c *Client) DeleteBgpNeighbor(asn int, m models.BgpNeighbor) error {
 }
 
 /*
-func (c *Client) ListBgpNeighbor() (*models.BgpNeighborList, error) {
+func (c *CiscoIOSXEClient) ListBgpNeighbor() (*models.BgpNeighborList, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/router/bgp/43892/neighbor=", c.HostURL), nil)
 	if err != nil {
 		return nil, err

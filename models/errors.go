@@ -1,15 +1,16 @@
 package models
 
+type CiscoErrorResp struct {
+	CiscoErrors *CiscoErrors `json:"errors,omitempty"`
+}
+
+type CiscoErrors struct {
+	CiscoError []CiscoError `json:"error,omitempty"`
+}
+
 type CiscoError struct {
-	Errors *Errors `json:"errors,omitempty"`
-}
-
-type Errors struct {
-	Error []Error `json:"error,omitempty"`
-}
-
-type Error struct {
 	ErrorMessage *string `json:"error-message,omitempty"`
 	ErrorTag     *string `json:"error-tag,omitempty"`
 	ErrorType    *string `json:"error-type,omitempty"`
+	ErrorPath    *string `json:"error-path,omitempty"`
 }

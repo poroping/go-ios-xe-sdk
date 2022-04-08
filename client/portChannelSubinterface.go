@@ -2,15 +2,15 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	"github.com/poroping/go-ios-xe-sdk/models"
 	"github.com/poroping/go-ios-xe-sdk/request"
 )
 
-func (c *CiscoIOSXEClient) CreateBgpRouter(m models.BgpRouter) error {
-	id := m.Bgp.ID
-	uri := models.BgpPath(id)
+func (c *CiscoIOSXEClient) CreatePortChannel(m models.PortChannel) error {
+	id := m.PortChannel.Name
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -19,33 +19,34 @@ func (c *CiscoIOSXEClient) CreateBgpRouter(m models.BgpRouter) error {
 
 	r := models.IOSXERequest{}
 	r.HTTPMethod = "PUT"
-	// r.Key = &m.Bgp.ID
+	r.Key = &m.PortChannel.Name
 	r.Payload = rb
-	r.Path = uri
+	r.Path = fmt.Sprintf("%s=%v", models.PortChannelPath, id)
 
 	err = request.CreateUpdate(&c.Config, &r)
 	if err != nil {
 		return err
 	}
 
+	log.Printf("[INFO] PortChannel %v created", id)
+
 	return nil
 }
 
-func (c *CiscoIOSXEClient) ReadBgpRouter(m models.BgpRouter) (*models.BgpRouter, error) {
-	id := m.Bgp.ID
-	uri := models.BgpPath(id)
+func (c *CiscoIOSXEClient) ReadPortChannel(m models.PortChannel) (*models.PortChannel, error) {
+	id := m.PortChannel.Name
 
 	r := models.IOSXERequest{}
 	r.HTTPMethod = "GET"
-	// r.Key = &m.Bgp.ID
-	r.Path = uri
+	r.Key = &m.PortChannel.Name
+	r.Path = fmt.Sprintf("%s=%v", models.PortChannelPath, id)
 
 	body, err := request.Read(&c.Config, &r)
 	if err != nil {
 		return nil, err
 	}
 
-	res := models.BgpRouter{}
+	res := models.PortChannel{}
 	if body == nil {
 		return &res, nil
 	}
@@ -54,12 +55,13 @@ func (c *CiscoIOSXEClient) ReadBgpRouter(m models.BgpRouter) (*models.BgpRouter,
 		return nil, err
 	}
 
+	log.Printf("[INFO] PortChannel %v read", id)
+
 	return &res, nil
 }
 
-func (c *CiscoIOSXEClient) UpdateBgpRouter(m models.BgpRouter) error {
-	id := m.Bgp.ID
-	uri := models.BgpPath(id)
+func (c *CiscoIOSXEClient) UpdatePortChannel(m models.PortChannel) error {
+	id := m.PortChannel.Name
 
 	rb, err := json.Marshal(m)
 	if err != nil {
@@ -69,8 +71,8 @@ func (c *CiscoIOSXEClient) UpdateBgpRouter(m models.BgpRouter) error {
 
 	r := models.IOSXERequest{}
 	r.HTTPMethod = "PUT"
-	// r.Key = &m.Bgp.ID
-	r.Path = uri
+	r.Key = &m.PortChannel.Name
+	r.Path = fmt.Sprintf("%s=%v", models.PortChannelPath, id)
 	r.Payload = rb
 
 	err = request.CreateUpdate(&c.Config, &r)
@@ -78,28 +80,31 @@ func (c *CiscoIOSXEClient) UpdateBgpRouter(m models.BgpRouter) error {
 		return err
 	}
 
+	log.Printf("[INFO] PortChannel %v updated", id)
+
 	return nil
 }
 
-func (c *CiscoIOSXEClient) DeleteBgpRouter(m models.BgpRouter) error {
-	id := m.Bgp.ID
-	uri := models.BgpPath(id)
+func (c *CiscoIOSXEClient) DeletePortChannel(m models.PortChannel) error {
+	id := m.PortChannel.Name
 
 	r := models.IOSXERequest{}
 	r.HTTPMethod = "DELETE"
-	// r.Key = &m.Bgp.ID
-	r.Path = uri
+	r.Key = &m.PortChannel.Name
+	r.Path = fmt.Sprintf("%s=%v", models.PortChannelPath, id)
 
 	err := request.Delete(&c.Config, &r)
 	if err != nil {
 		return err
 	}
 
+	log.Printf("[INFO] PortChannel %v deleted", id)
+
 	return nil
 }
 
-// func (c *CiscoIOSXEClient) ListBgpRouter(uri string) (*models.BgpRouterList, error) {
-// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/%s", c.HostURL, uri), nil)
+// func (c *CiscoIOSXEClient) ListPortChannel() (*models.PortChannelList, error) {
+// 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/restconf/api/running/native/interface/PortChannel/", c.HostURL), nil)
 // 	if err != nil {
 // 		return nil, err
 // 	}
@@ -109,7 +114,7 @@ func (c *CiscoIOSXEClient) DeleteBgpRouter(m models.BgpRouter) error {
 // 		return nil, err
 // 	}
 
-// 	res := models.BgpRouterList{}
+// 	res := models.PortChannelList{}
 // 	err = json.Unmarshal(body, &res)
 // 	if err != nil {
 // 		return nil, err

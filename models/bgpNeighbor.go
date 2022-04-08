@@ -1,6 +1,13 @@
 package models
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func BgpNeighborPath(asn int, neighbor string) string {
+	return fmt.Sprintf("%s/neighbor=%s", string(BgpPath(asn)), neighbor)
+}
 
 type BgpNeighbor struct {
 	Neighbor Neighbor `json:"Cisco-IOS-XE-bgp:neighbor,omitempty"`
@@ -8,7 +15,7 @@ type BgpNeighbor struct {
 
 type Neighbor struct {
 	ID                    string           `json:"id,omitempty"`
-	RemoteAs              int              `json:"remote-as,omitempty"`
+	RemoteAs              *int             `json:"remote-as,omitempty"`
 	ClusterID             interface{}      `json:"cluster-id,omitempty"`
 	Description           *string          `json:"description,omitempty"`
 	DisableConnectedCheck *json.RawMessage `json:"disable-connected-check,omitempty"`
@@ -21,7 +28,7 @@ type Neighbor struct {
 	Shutdown     *json.RawMessage `json:"shutdown,omitempty"`
 	Timers       *Timers          `json:"timers,omitempty"`
 	UpdateSource *UpdateSource    `json:"update-source,omitempty"`
-	Vrf          string           `json:"-"`
+	ASN          int              `json:"-"`
 }
 
 type Timers struct {
